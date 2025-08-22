@@ -85,6 +85,7 @@ int main(void)
 
     int best_score = 0;
     unsigned best_mask = 0;
+    int best_center_ind = 0;
 
     // brute force (26 choose 7 masks)
     for (unsigned mask = 0; mask < 1 << S; ++mask)
@@ -99,6 +100,7 @@ int main(void)
         if (possible_score <= best_score)
             continue;
 
+        // try center from 0 to H
         for (int center = 0; center < H; ++center) 
         {
             int score = subset_score(mask, center);
@@ -115,6 +117,9 @@ int main(void)
                 {
                     if (mask & (1 << i))
                     {
+                        if (j == center)
+                            best_center_ind = i;
+
                         char c = (j == center) ? 'A' + i : 'a' + i;
                         printf("%c", c);
                         ++j;
@@ -133,7 +138,7 @@ int main(void)
     {
         unsigned mask = get_word_mask(wordbuf);
 
-        if (strlen(wordbuf) >= M && mask != 0 
+        if (strlen(wordbuf) >= M && (mask & (1 << best_center_ind)) 
             && (mask | best_mask) == best_mask)
         {
             if (__builtin_popcount(mask) == H)
